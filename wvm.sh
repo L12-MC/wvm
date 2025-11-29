@@ -34,10 +34,16 @@ echo "Binary directory: $BIN_DIR"
 echo "Shell configuration: $SHELL_CONFIG"
 echo ""
 
+# Remove existing installation for clean install
+if [ -d "$INSTALL_DIR" ]; then
+    echo "Removing existing installation..."
+    rm -rf "$INSTALL_DIR"
+    echo "✓ Cleaned up old installation"
+fi
+
 # Create directories
 echo "Setting up directories..."
 mkdir -p "$BIN_DIR"
-rm -rf "$TEMP_DIR"
 mkdir -p "$TEMP_DIR"
 
 # Process each repository
@@ -49,10 +55,18 @@ for repo_info in "${REPOS[@]}"; do
     
     repo_dir="$TEMP_DIR/$name"
     
-    # Clone repository
-    echo "Cloning $name from $url..."
-    if git clone --depth 1 "$url" "$repo_dir"; then
+    # Clone repository (fetch latest version)
+    echo "Cloning latest version of $name from $url..."
+    if git clone --depth 1 --branch main "$url" "$repo_dir" 2>/dev/null || \
+       git clone --depth 1 --branch master "$url" "$repo_dir" 2>/dev/null || \
+       git clone --depth 1 "$url" "$repo_dir"; then
         echo "✓ Clone successful"
+        
+        # Show the commit info for verification
+        cd "$repo_dir"
+        latest_commit=$(git log -1 --format="%h - %s (%ar)" 2>/dev/null || echo "unknown")
+        echo "  Latest commit: $latest_commit"
+        cd - > /dev/null
     else
         echo "✗ Failed to clone $name"
         continue

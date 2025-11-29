@@ -1,4 +1,14 @@
-# WVM Installer - Final Updates
+# WVM Installer - Changelog
+
+## Latest Updates (v2.0)
+
+### Clean Installation & Version Fetching
+- **Clean Install**: Automatically removes existing `.wvm` directory before installing
+- **Latest Version**: Always fetches the most recent code from repositories
+- **Commit Info**: Shows latest commit information for verification
+- **Smart Branch Detection**: Tries main branch, falls back to master, then default
+
+## Previous Updates (v1.0)
 
 ## Changes Applied
 

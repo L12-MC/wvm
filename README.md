@@ -4,7 +4,10 @@ A build and installation manager for [wslang](https://github.com/L12-MC/wslang.g
 
 ## Features
 
+- **Clean installation**: Removes existing installation before installing
+- **Latest version**: Always fetches the most recent code from repositories
 - Automatically clones the latest versions of wslang and wpm
+- Shows commit information for verification
 - Runs each project's own build script (build.sh or build.bat)
 - Falls back to manual Dart compilation if build scripts fail
 - Builds in temporary directories, copies only executables
@@ -62,15 +65,21 @@ After installation, restart your terminal or computer.
 
 ## What the Script Does
 
-1. **Creates Installation Directory**
+1. **Clean Installation**
+   - Removes existing `~/.wvm` (Linux/macOS) or `C:\Program Files\wvm` (Windows) directory
+   - Ensures fresh installation every time
+
+2. **Creates Installation Directory**
    - Linux/macOS: `~/.wvm/bin`
    - Windows: `C:\Program Files\wvm\bin`
 
-2. **Clones Repositories**
+3. **Clones Latest Repositories**
    - wslang from https://github.com/L12-MC/wslang.git
    - wpm from https://github.com/L12-MC/wpm.git
+   - Tries main branch, falls back to master, then default
+   - Shows latest commit information
 
-3. **Builds Each Project**
+4. **Builds Each Project**
    - Looks for `build.sh` (Linux/macOS) or `build.bat` (Windows)
    - Falls back to `Makefile` if available
    - Builds in temporary directory
@@ -78,6 +87,7 @@ After installation, restart your terminal or computer.
 4. **Installs Executables**
    - Searches for compiled executables in `bin/`, `build/`, `out/`, `target/`, and root
    - Copies only executables (not source files)
+   - Automatically renames for consistency (ws-linux → wslang, wpm-linux → wpm)
    - Makes them executable on Linux/macOS
 
 5. **Updates PATH**
@@ -86,6 +96,26 @@ After installation, restart your terminal or computer.
 
 6. **Cleanup**
    - Removes all temporary build directories
+
+## Updating to Latest Version
+
+Simply run the installer again to update to the latest versions:
+
+### Linux/macOS
+```bash
+./wvm.sh
+```
+
+### Windows
+```cmd
+wvm.bat (as Administrator)
+```
+
+The script will:
+- Remove the old installation
+- Fetch the latest code
+- Rebuild and reinstall everything
+- Show you the latest commit for each package
 
 ## Manual Building (Optional)
 

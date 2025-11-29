@@ -27,10 +27,16 @@ echo Installation directory: %INSTALL_DIR%
 echo Binary directory: %BIN_DIR%
 echo.
 
+REM Remove existing installation for clean install
+if exist "%INSTALL_DIR%" (
+    echo Removing existing installation...
+    rmdir /s /q "%INSTALL_DIR%"
+    echo + Cleaned up old installation
+)
+
 REM Create directories
 echo Setting up directories...
-if not exist "%BIN_DIR%" mkdir "%BIN_DIR%"
-if exist "%TEMP_DIR%" rmdir /s /q "%TEMP_DIR%"
+mkdir "%BIN_DIR%"
 mkdir "%TEMP_DIR%"
 
 REM Repositories
@@ -48,14 +54,25 @@ for /L %%i in (0,1,1) do (
     set "repo_url=!repos[%%i].url!"
     set "repo_dir=%TEMP_DIR%\!repo_name!"
     
-    REM Clone repository
-    echo Cloning !repo_name! from !repo_url!...
-    git clone --depth 1 "!repo_url!" "!repo_dir!"
+    REM Clone repository (fetch latest version)
+    echo Cloning latest version of !repo_name! from !repo_url!...
+    git clone --depth 1 --branch main "!repo_url!" "!repo_dir!" >nul 2>&1
     if !errorLevel! neq 0 (
-        echo X Failed to clone !repo_name!
-        goto :continue_loop
+        git clone --depth 1 --branch master "!repo_url!" "!repo_dir!" >nul 2>&1
+        if !errorLevel! neq 0 (
+            git clone --depth 1 "!repo_url!" "!repo_dir!"
+            if !errorLevel! neq 0 (
+                echo X Failed to clone !repo_name!
+                goto :continue_loop
+            )
+        )
     )
     echo + Clone successful
+    
+    REM Show latest commit info
+    cd /d "!repo_dir!"
+    for /f "delims=" %%c in ('git log -1 --format^="%%h - %%s"') do echo   Latest commit: %%c
+    cd /d "%~dp0"
     
     cd /d "!repo_dir!"
     
