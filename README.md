@@ -5,25 +5,21 @@ A build and installation manager for [wslang](https://github.com/L12-MC/wslang.g
 ## Features
 
 - **Clean installation**: Removes existing installation before installing
-- **Latest version**: Always fetches the most recent code from repositories
-- Automatically clones the latest versions of wslang and wpm
-- Shows commit information for verification
-- Runs each project's own build script (build.sh or build.bat)
-- Falls back to manual Dart compilation if build scripts fail
-- Builds in temporary directories, copies only executables
-- Automatically renames executables for consistency:
-  - `ws-linux` → `wslang` (or `ws-macos` → `wslang`)
-  - `wpm-linux` → `wpm` (or `wpm.exe` → `wpm.exe`)
+- **Pre-built binaries**: Downloads ready-to-use executables from GitHub releases
+- **Fast installation**: No compilation needed, just download and install
+- **Cross-platform**: Automatically detects your platform (Linux, macOS, Windows)
+- **Simple**: No build tools or dependencies required (except wget/curl)
 - Installs all binaries to a single directory
   - Linux/macOS: `~/.wvm/bin`
   - Windows: `C:\Program Files\wvm\bin`
 - Automatically adds to PATH
+- Supports both wget and curl for downloading
 
 ## Prerequisites
 
-- Git installed
-- Internet connection for cloning repositories
-- Linux/macOS: bash shell
+- Internet connection for downloading executables
+- Linux/macOS: wget or curl (usually pre-installed)
+- Windows: curl or PowerShell (pre-installed on modern Windows)
 - Windows: Administrator privileges (for PATH modification)
 
 ## Quick Installation
@@ -73,33 +69,31 @@ After installation, restart your terminal or computer.
    - Linux/macOS: `~/.wvm/bin`
    - Windows: `C:\Program Files\wvm\bin`
 
-3. **Clones Latest Repositories**
-   - wslang from https://github.com/L12-MC/wslang.git
-   - wpm from https://github.com/L12-MC/wpm.git
-   - Tries main branch, falls back to master, then default
-   - Shows latest commit information
+3. **Detects Platform**
+   - Automatically identifies your operating system
+   - Selects the correct pre-built executable
 
-4. **Builds Each Project**
-   - Looks for `build.sh` (Linux/macOS) or `build.bat` (Windows)
-   - Falls back to `Makefile` if available
-   - Builds in temporary directory
+4. **Downloads Pre-built Executables**
+   - **wslang v1.0.3** from GitHub releases
+   - **wpm v2.0** from GitHub releases
+   - Uses wget or curl (Linux/macOS) or curl/PowerShell (Windows)
+   - Shows download progress
 
-4. **Installs Executables**
-   - Searches for compiled executables in `bin/`, `build/`, `out/`, `target/`, and root
-   - Copies only executables (not source files)
-   - Automatically renames for consistency (ws-linux → wslang, wpm-linux → wpm)
-   - Makes them executable on Linux/macOS
+5. **Installs Executables**
+   - Copies downloaded binaries to bin directory
+   - Sets executable permissions (Linux/macOS)
+   - Clean, consistent names: `wslang` and `wpm` (`.exe` on Windows)
 
-5. **Updates PATH**
+6. **Updates PATH**
    - Linux/macOS: Adds to `~/.bashrc` or `~/.zshrc`
    - Windows: Adds to system PATH (requires admin)
 
-6. **Cleanup**
-   - Removes all temporary build directories
+7. **Cleanup**
+   - Removes temporary download directory
 
 ## Updating to Latest Version
 
-Simply run the installer again to update to the latest versions:
+To update to a newer release, simply run the installer again:
 
 ### Linux/macOS
 ```bash
@@ -113,9 +107,11 @@ wvm.bat (as Administrator)
 
 The script will:
 - Remove the old installation
-- Fetch the latest code
-- Rebuild and reinstall everything
-- Show you the latest commit for each package
+- Download the latest release binaries
+- Reinstall everything
+- Update your PATH if needed
+
+**Note**: The installer downloads specific release versions (wslang v1.0.3, wpm v2.0). To install different versions, you can modify the URLs in the script.
 
 ## Manual Building (Optional)
 
