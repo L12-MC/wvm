@@ -84,18 +84,18 @@ for repo_info in "${REPOS[@]}"; do
             echo "✓ Build successful"
             build_success=true
         else
-            echo "⚠ Build script failed, trying manual compilation..."
+            echo "Build script failed, trying manual compilation..."
         fi
     elif [ -f "Makefile" ]; then
         echo "Found Makefile, building $name..."
         if make build || make; then
-            echo "✓ Build successful"
+            echo "Build successful"
             build_success=true
         else
-            echo "⚠ Makefile build failed, trying manual compilation..."
+            echo "Makefile build failed, trying manual compilation..."
         fi
     else
-        echo "⚠ No build script found, trying manual compilation..."
+        echo "No build script found, trying manual compilation..."
     fi
     
     # If build script failed or doesn't exist, try manual Dart compilation
@@ -129,20 +129,20 @@ for repo_info in "${REPOS[@]}"; do
                 
                 # Compile
                 if dart compile exe "$main_file" -o "$output"; then
-                    echo "✓ Manual compilation successful"
+                    echo "Manual compilation successful"
                     build_success=true
                 else
-                    echo "✗ Manual compilation failed for $name"
+                    echo "Manual compilation failed for $name"
                 fi
             else
-                echo "✗ Could not find main dart file"
+                echo "Could not find main dart file"
             fi
         fi
     fi
     
     # If still failed, skip this repo
     if [ "$build_success" = false ]; then
-        echo "✗ All build attempts failed for $name"
+        echo "All build attempts failed for $name"
         cd - > /dev/null
         continue
     fi
@@ -200,9 +200,9 @@ for repo_info in "${REPOS[@]}"; do
                 chmod +x "$BIN_DIR/$target_name"
                 
                 if [ "$filename" != "$target_name" ]; then
-                    echo "✓ Copied and renamed: $filename -> $target_name"
+                    echo "Copied and renamed: $filename -> $target_name"
                 else
-                    echo "✓ Copied executable: $filename"
+                    echo "Copied executable: $filename"
                 fi
                 found_exe=true
             fi
@@ -210,7 +210,7 @@ for repo_info in "${REPOS[@]}"; do
     done
     
     if [ "$found_exe" = false ]; then
-        echo "⚠ No executables found for $name"
+        echo "No executables found for $name"
     fi
     
     cd - > /dev/null
@@ -224,7 +224,7 @@ rm -rf "$TEMP_DIR"
 # Check if PATH already contains bin directory
 if [[ ":$PATH:" == *":$BIN_DIR:"* ]]; then
     echo ""
-    echo "✓ $BIN_DIR is already in PATH"
+    echo "$BIN_DIR is already in PATH"
 else
     # Add to PATH in shell config
     echo ""
@@ -232,17 +232,17 @@ else
     
     # Check if the export line already exists in the file
     if grep -q "export PATH=\"\$PATH:$BIN_DIR\"" "$SHELL_CONFIG" 2>/dev/null; then
-        echo "✓ PATH entry already exists in $SHELL_CONFIG"
+        echo "PATH entry already exists in $SHELL_CONFIG"
     else
         echo "" >> "$SHELL_CONFIG"
         echo "# Added by WVM installer" >> "$SHELL_CONFIG"
         echo "export PATH=\"\$PATH:$BIN_DIR\"" >> "$SHELL_CONFIG"
-        echo "✓ Added to $SHELL_CONFIG"
+        echo "Added to $SHELL_CONFIG"
     fi
     
     # Export for current session
     export PATH="$PATH:$BIN_DIR"
-    echo "✓ Added to current session PATH"
+    echo "Added to current session PATH"
 fi
 
 # Display results
