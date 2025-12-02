@@ -44,18 +44,18 @@ PLATFORM=$(uname -s)
 case "$PLATFORM" in
     Linux*)
         PLATFORM_NAME="Linux"
-        WSLANG_URL="https://github.com/L12-MC/wslang/releases/download/v1.0.3/wslang"
-        WPM_URL="https://github.com/L12-MC/wpm/releases/download/v2.0/wpm"
+        WSLANG_ASSET_PATTERN="^wslang$"
+        WPM_ASSET_PATTERN="^wpm$"
         ;;
     Darwin*)
         PLATFORM_NAME="macOS"
-        WSLANG_URL="https://github.com/L12-MC/wslang/releases/download/v1.0.3/wslang"
-        WPM_URL="https://github.com/L12-MC/wpm/releases/download/v2.0/wpm"
+        WSLANG_ASSET_PATTERN="^wslang$"
+        WPM_ASSET_PATTERN="^wpm$"
         ;;
     MINGW*|MSYS*|CYGWIN*)
         PLATFORM_NAME="Windows (Git Bash)"
-        WSLANG_URL="https://github.com/L12-MC/wslang/releases/download/v1.0.3/ws-windows.exe"
-        WPM_URL="https://github.com/L12-MC/wpm/releases/download/v2.0/wpm.exe"
+        WSLANG_ASSET_PATTERN="^(ws-windows\.exe|wslang\.exe)$"
+        WPM_ASSET_PATTERN="^wpm\.exe$"
         ;;
     *)
         echo "Error: Unsupported platform: $PLATFORM"
@@ -77,6 +77,43 @@ else
     exit 1
 fi
 
+# Resolve latest release URLs from GitHub API
+WSLANG_API="https://api.github.com/repos/L12-MC/wslang/releases/latest"
+WPM_API="https://api.github.com/repos/L12-MC/wpm/releases/latest"
+
+echo "Resolving latest release for wslang..."
+if command -v jq >/dev/null 2>&1; then
+    WSLANG_URL=$(curl -sL "$WSLANG_API" | jq -r ".assets[] | select(.name | test(\"$WSLANG_ASSET_PATTERN\")) | .browser_download_url" | head -n1)
+else
+    # Fallback without jq: crude grep
+    WSLANG_URL=$(curl -sL "$WSLANG_API" | grep -E "browser_download_url|name" | paste - - | grep -E "$WSLANG_ASSET_PATTERN" | sed -E 's/.*"browser_download_url": "([^"]+)".*/\1/' | head -n1)
+fi
+
+echo "Resolving latest release for wpm..."
+if command -v jq >/dev/null 2>&1; then
+    WPM_URL=$(curl -sL "$WPM_API" | jq -r ".assets[] | select(.name | test(\"$WPM_ASSET_PATTERN\")) | .browser_download_url" | head -n1)
+else
+    WPM_URL=$(curl -sL "$WPM_API" | grep -E "browser_download_url|name" | paste - - | grep -E "$WPM_ASSET_PATTERN" | sed -E 's/.*"browser_download_url": "([^"]+)".*/\1/' | head -n1)
+fi
+
+if [ -z "$WSLANG_URL" ]; then
+    echo "Warning: Could not resolve wslang asset; using latest/download fallback"
+    if [[ "$PLATFORM_NAME" == "Windows (Git Bash)" ]]; then
+        WSLANG_URL="https://github.com/L12-MC/wslang/releases/latest/download/ws-windows.exe"
+    else
+        WSLANG_URL="https://github.com/L12-MC/wslang/releases/latest/download/wslang"
+    fi
+fi
+
+if [ -z "$WPM_URL" ]; then
+    echo "Warning: Could not resolve wpm asset; using latest/download fallback"
+    if [[ "$PLATFORM_NAME" == "Windows (Git Bash)" ]]; then
+        WPM_URL="https://github.com/L12-MC/wpm/releases/latest/download/wpm.exe"
+    else
+        WPM_URL="https://github.com/L12-MC/wpm/releases/latest/download/wpm"
+    fi
+fi
+
 # Download wslang
 echo "--- Downloading wslang ---"
 echo "URL: $WSLANG_URL"
@@ -87,8 +124,13 @@ else
 fi
 
 if [ $? -eq 0 ] && [ -f "$TEMP_DIR/wslang" ]; then
-    mv "$TEMP_DIR/wslang" "$BIN_DIR/wslang"
-    chmod +x "$BIN_DIR/wslang"
+    # If Windows asset is an .exe, name appropriately
+    if [[ "$PLATFORM_NAME" == "Windows (Git Bash)" ]] && [[ "$WSLANG_URL" =~ \.exe$ ]]; then
+        mv "$TEMP_DIR/wslang" "$BIN_DIR/wslang.exe"
+    else
+        mv "$TEMP_DIR/wslang" "$BIN_DIR/wslang"
+        chmod +x "$BIN_DIR/wslang"
+    fi
     echo "✓ Installed wslang"
 else
     echo "✗ Failed to download wslang"
@@ -105,8 +147,12 @@ else
 fi
 
 if [ $? -eq 0 ] && [ -f "$TEMP_DIR/wpm" ]; then
-    mv "$TEMP_DIR/wpm" "$BIN_DIR/wpm"
-    chmod +x "$BIN_DIR/wpm"
+    if [[ "$PLATFORM_NAME" == "Windows (Git Bash)" ]] && [[ "$WPM_URL" =~ \.exe$ ]]; then
+        mv "$TEMP_DIR/wpm" "$BIN_DIR/wpm.exe"
+    else
+        mv "$TEMP_DIR/wpm" "$BIN_DIR/wpm"
+        chmod +x "$BIN_DIR/wpm"
+    fi
     echo "✓ Installed wpm"
 else
     echo "✗ Failed to download wpm"

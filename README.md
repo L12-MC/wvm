@@ -73,10 +73,11 @@ After installation, restart your terminal or computer.
    - Automatically identifies your operating system
    - Selects the correct pre-built executable
 
-4. **Downloads Pre-built Executables**
-   - **wslang v1.0.3** from GitHub releases
-   - **wpm v2.0** from GitHub releases
-   - Uses wget or curl (Linux/macOS) or curl/PowerShell (Windows)
+4. **Downloads Latest Releases**
+   - Automatically resolves the latest GitHub release assets for `wslang` and `wpm`
+   - Uses `curl`/`wget` on Linux/macOS (prefers `jq` if available for parsing)
+   - Uses PowerShell on Windows to query the GitHub API
+   - Falls back to `releases/latest/download/...` URLs if API parsing fails
    - Shows download progress
 
 5. **Installs Executables**
@@ -111,7 +112,7 @@ The script will:
 - Reinstall everything
 - Update your PATH if needed
 
-**Note**: The installer downloads specific release versions (wslang v1.0.3, wpm v2.0). To install different versions, you can modify the URLs in the script.
+**Note**: The installer now targets the latest release automatically. If you need a specific version, you can adjust the resolution logic to pin to a tag.
 
 ## Manual Building (Optional)
 
