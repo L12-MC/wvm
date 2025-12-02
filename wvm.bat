@@ -50,16 +50,16 @@ for /f "usebackq tokens=*" %%A in (`powershell -NoProfile -Command ^
     "$ErrorActionPreference='Stop'; ^
      $headers=@{ 'User-Agent'='wvm-installer'; 'Accept'='application/vnd.github+json' }; ^
      $r=Invoke-RestMethod -Uri '%WSLANG_API%' -Headers $headers; ^
-     $asset= $r.assets | Where-Object { $_.name -match 'ws-(windows|wslang).*\.exe$' -or $_.name -match '^wslang(\.exe)?$' -or $_.name -match '^wslang$' }; ^
-     ($asset | Select-Object -First 1).browser_download_url"`) do set "WSLANG_URL=%%A"
+     $asset= $r.assets ^| Where-Object { $_.name -match 'ws-(windows|wslang).*\.exe$' -or $_.name -match '^wslang(\.exe)?$' -or $_.name -match '^wslang$' }; ^
+     ($asset ^| Select-Object -First 1).browser_download_url"`) do set "WSLANG_URL=%%A"
 
 echo Resolving latest release for wpm...
 for /f "usebackq tokens=*" %%A in (`powershell -NoProfile -Command ^
     "$ErrorActionPreference='Stop'; ^
      $headers=@{ 'User-Agent'='wvm-installer'; 'Accept'='application/vnd.github+json' }; ^
      $r=Invoke-RestMethod -Uri '%WPM_API%' -Headers $headers; ^
-     $asset= $r.assets | Where-Object { $_.name -match '^wpm(\.exe)?$' -or $_.name -match '^wpm$' }; ^
-     ($asset | Select-Object -First 1).browser_download_url"`) do set "WPM_URL=%%A"
+     $asset= $r.assets ^| Where-Object { $_.name -match '^wpm(\.exe)?$' -or $_.name -match '^wpm$' }; ^
+     ($asset ^| Select-Object -First 1).browser_download_url"`) do set "WPM_URL=%%A"
 
 if not defined WSLANG_URL (
     echo Error: Could not resolve latest wslang asset URL.
