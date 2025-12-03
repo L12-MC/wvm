@@ -77,42 +77,8 @@ else
     exit 1
 fi
 
-# Resolve latest release URLs from GitHub API
-WSLANG_API="https://api.github.com/repos/L12-MC/wslang/releases/latest"
-WPM_API="https://api.github.com/repos/L12-MC/wpm/releases/latest"
-
-echo "Resolving latest release for wslang..."
-if command -v jq >/dev/null 2>&1; then
-    WSLANG_URL=$(curl -sL "$WSLANG_API" | jq -r ".assets[] | select(.name | test(\"$WSLANG_ASSET_PATTERN\")) | .browser_download_url" | head -n1)
-else
-    # Fallback without jq: crude grep
-    WSLANG_URL=$(curl -sL "$WSLANG_API" | grep -E "browser_download_url|name" | paste - - | grep -E "$WSLANG_ASSET_PATTERN" | sed -E 's/.*"browser_download_url": "([^"]+)".*/\1/' | head -n1)
-fi
-
-echo "Resolving latest release for wpm..."
-if command -v jq >/dev/null 2>&1; then
-    WPM_URL=$(curl -sL "$WPM_API" | jq -r ".assets[] | select(.name | test(\"$WPM_ASSET_PATTERN\")) | .browser_download_url" | head -n1)
-else
-    WPM_URL=$(curl -sL "$WPM_API" | grep -E "browser_download_url|name" | paste - - | grep -E "$WPM_ASSET_PATTERN" | sed -E 's/.*"browser_download_url": "([^"]+)".*/\1/' | head -n1)
-fi
-
-if [ -z "$WSLANG_URL" ]; then
-    echo "Warning: Could not resolve wslang asset; using latest/download fallback"
-    if [[ "$PLATFORM_NAME" == "Windows (Git Bash)" ]]; then
-        WSLANG_URL="https://github.com/L12-MC/wslang/releases/latest/download/ws-windows.exe"
-    else
-        WSLANG_URL="https://github.com/L12-MC/wslang/releases/latest/download/wslang"
-    fi
-fi
-
-if [ -z "$WPM_URL" ]; then
-    echo "Warning: Could not resolve wpm asset; using latest/download fallback"
-    if [[ "$PLATFORM_NAME" == "Windows (Git Bash)" ]]; then
-        WPM_URL="https://github.com/L12-MC/wpm/releases/latest/download/wpm.exe"
-    else
-        WPM_URL="https://github.com/L12-MC/wpm/releases/latest/download/wpm"
-    fi
-fi
+WSLANG_URL="https://github.com/L12-MC/wslang/releases/latest/download/wslang.exe"
+WPM_URL="https://github.com/L12-MC/wpm/releases/latest/download/wpm.exe"
 
 # Download wslang
 echo "--- Downloading wslang ---"

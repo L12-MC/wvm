@@ -42,35 +42,12 @@ mkdir "%BIN_DIR%" 2>nul
 mkdir "%TEMP_DIR%" 2>nul
 
 REM Determine latest release asset URLs via GitHub API
-set "WSLANG_API=https://api.github.com/repos/L12-MC/wslang/releases/latest"
-set "WPM_API=https://api.github.com/repos/L12-MC/wpm/releases/latest"
 
 echo Resolving latest release for wslang...
-for /f "usebackq tokens=*" %%A in (`powershell -NoProfile -Command ^
-    "$ErrorActionPreference='Stop'; ^
-     $headers=@{ 'User-Agent'='wvm-installer'; 'Accept'='application/vnd.github+json' }; ^
-     $r=Invoke-RestMethod -Uri '%WSLANG_API%' -Headers $headers; ^
-     $asset= $r.assets ^| Where-Object { $_.name -match 'ws-(windows|wslang).*\.exe$' -or $_.name -match '^wslang(\.exe)?$' -or $_.name -match '^wslang$' }; ^
-     ($asset ^| Select-Object -First 1).browser_download_url"`) do set "WSLANG_URL=%%A"
 
-echo Resolving latest release for wpm...
-for /f "usebackq tokens=*" %%A in (`powershell -NoProfile -Command ^
-    "$ErrorActionPreference='Stop'; ^
-     $headers=@{ 'User-Agent'='wvm-installer'; 'Accept'='application/vnd.github+json' }; ^
-     $r=Invoke-RestMethod -Uri '%WPM_API%' -Headers $headers; ^
-     $asset= $r.assets ^| Where-Object { $_.name -match '^wpm(\.exe)?$' -or $_.name -match '^wpm$' }; ^
-     ($asset ^| Select-Object -First 1).browser_download_url"`) do set "WPM_URL=%%A"
+set "WSLANG_URL=https://github.com/L12-MC/wslang/releases/latest/download/wslang.exe"
 
-if not defined WSLANG_URL (
-    echo Error: Could not resolve latest wslang asset URL.
-    echo Falling back to previous static URL.
-    set "WSLANG_URL=https://github.com/L12-MC/wslang/releases/latest/download/ws-windows.exe"
-)
-if not defined WPM_URL (
-    echo Error: Could not resolve latest wpm asset URL.
-    echo Falling back to previous static URL.
-    set "WPM_URL=https://github.com/L12-MC/wpm/releases/latest/download/wpm.exe"
-)
+set "WPM_URL=https://github.com/L12-MC/wpm/releases/latest/download/wpm.exe"
 
 echo Resolved wslang URL: %WSLANG_URL%
 echo Resolved wpm URL: %WPM_URL%
