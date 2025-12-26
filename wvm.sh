@@ -77,8 +77,8 @@ else
     exit 1
 fi
 
-WSLANG_URL="https://github.com/L12-MC/wslang/releases/latest/download/wslang.exe"
-WPM_URL="https://github.com/L12-MC/wpm/releases/latest/download/wpm.exe"
+WSLANG_URL="https://github.com/L12-MC/wslang/releases/latest/download/wslang-linux"
+WPM_URL="https://github.com/L12-MC/wpm/releases/latest/download/wpm"
 
 # Download wslang
 echo "--- Downloading wslang ---"
@@ -92,7 +92,7 @@ fi
 if [ $? -eq 0 ] && [ -f "$TEMP_DIR/wslang" ]; then
     # If Windows asset is an .exe, name appropriately
     if [[ "$PLATFORM_NAME" == "Windows (Git Bash)" ]] && [[ "$WSLANG_URL" =~ \.exe$ ]]; then
-        mv "$TEMP_DIR/wslang" "$BIN_DIR/wslang.exe"
+        mv "$TEMP_DIR/wslang" "$BIN_DIR/wslang"
     else
         mv "$TEMP_DIR/wslang" "$BIN_DIR/wslang"
         chmod +x "$BIN_DIR/wslang"

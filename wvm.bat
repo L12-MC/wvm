@@ -45,7 +45,7 @@ REM Determine latest release asset URLs via GitHub API
 
 echo Resolving latest release for wslang...
 
-set "WSLANG_URL=https://github.com/L12-MC/wslang/releases/latest/download/wslang.exe"
+set "WSLANG_URL=https://github.com/L12-MC/wslang/releases/latest/download/wslang-win.exe"
 
 set "WPM_URL=https://github.com/L12-MC/wpm/releases/latest/download/wpm.exe"
 
@@ -76,7 +76,7 @@ if "!HAS_CURL!"=="1" (
 )
 
 if exist "%TEMP_DIR%\wslang.exe" (
-    move /Y "%TEMP_DIR%\wslang.exe" "%BIN_DIR%\wslang.exe" >nul
+    move /Y "%TEMP_DIR%\wslang.exe" "%BIN_DIR%\wslang" >nul
     echo + Installed wslang.exe
 ) else (
     echo X Failed to download wslang
@@ -93,7 +93,7 @@ if "!HAS_CURL!"=="1" (
 )
 
 if exist "%TEMP_DIR%\wpm.exe" (
-    move /Y "%TEMP_DIR%\wpm.exe" "%BIN_DIR%\wpm.exe" >nul
+    move /Y "%TEMP_DIR%\wpm.exe" "%BIN_DIR%\wpm" >nul
     echo + Installed wpm.exe
 ) else (
     echo X Failed to download wpm
