@@ -76,7 +76,7 @@ if "!HAS_CURL!"=="1" (
 )
 
 if exist "%TEMP_DIR%\wslang.exe" (
-    move /Y "%TEMP_DIR%\wslang.exe" "%BIN_DIR%\wslang" >nul
+    move /Y "%TEMP_DIR%\wslang.exe" "%BIN_DIR%\wslang.exe" >nul
     echo + Installed wslang.exe
 ) else (
     echo X Failed to download wslang
@@ -93,7 +93,7 @@ if "!HAS_CURL!"=="1" (
 )
 
 if exist "%TEMP_DIR%\wpm.exe" (
-    move /Y "%TEMP_DIR%\wpm.exe" "%BIN_DIR%\wpm" >nul
+    move /Y "%TEMP_DIR%\wpm.exe" "%BIN_DIR%\wpm.exe" >nul
     echo + Installed wpm.exe
 ) else (
     echo X Failed to download wpm
